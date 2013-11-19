@@ -3,6 +3,11 @@
 
     <string name="app_name">PicTrack</string>
     <string name="action_settings">Settings</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="alkuteksti">Tällä ohjelmalla voit katsoa ottamiasi kuvia niiden sijainnin perusteella. Klikkaa sijaintia ja näet kuvan</string>
+    
+    <string name="button_openList">Avaa ListView</string>
+    <string name="button_openPicture">Avaa kuvanäkymä</string>
+    <string name="menu_info">Infoa</string>
+    <string name="menu_apu">Apua</string>
 
 </resources>

@@ -1,9 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:showAsAction="never"
-        android:title="@string/action_settings"/>
+        android:id="@+id/menu_info"
+        android:showAsAction="always"
+        android:title="@string/menu_info"/>
+    <item
+        android:id="@+id/menu_apu"
+        android:showAsAction="always"
+        android:title="@string/menu_apu"/>
 
 </menu>

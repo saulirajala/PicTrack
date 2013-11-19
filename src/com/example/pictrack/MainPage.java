@@ -1,12 +1,11 @@
-/*
- * Tuli läpi
- */
-
 package com.example.pictrack;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.view.Menu;
+import android.view.MenuItem;
 
 /*
  * Sovelluksessa on lista paikoista, joissa on otettu kuva. Lista pitää
@@ -33,6 +32,7 @@ public class MainPage extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main_page);
+
 	}
 
 	@Override
@@ -42,4 +42,32 @@ public class MainPage extends Activity {
 		return true;
 	}
 
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle item selection
+		switch (item.getItemId()) {
+			case R.id.menu_info:
+				infoDialogi();
+				return true;
+			case R.id.menu_apu:
+				// showHelp();
+				return true;
+			default:
+				return super.onOptionsItemSelected(item);
+		}
+	}
+
+	@SuppressWarnings("deprecation")
+	private void infoDialogi() {
+		AlertDialog alertDialog = new AlertDialog.Builder(MainPage.this)
+		        .create();
+		alertDialog.setTitle("Infoa");
+		alertDialog.setMessage("Tämä on joku sovellus");
+		alertDialog.setButton("Pois", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int which) {
+				closeOptionsMenu();
+			}
+		});
+		alertDialog.show();
+	}
 }
