@@ -1,5 +1,5 @@
 /*
- * Tuleeko tämä läpi?
+ * Tuli läpi
  */
 
 package com.example.pictrack;
