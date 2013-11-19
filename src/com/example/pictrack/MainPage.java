@@ -1,3 +1,7 @@
+/*
+ * Tuleeko tämä läpi?
+ */
+
 package com.example.pictrack;
 
 import android.os.Bundle;
