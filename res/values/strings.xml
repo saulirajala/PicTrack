@@ -10,6 +10,8 @@
     <string name="menu_info">Infoa</string>
     <string name="menu_apu">Apua</string>
     <string name="title_listView">Listanäkymä</string>
-    <string name="title_kuvatView">Kuvat näkymä</string>
+    <string name="title_kuvatView">Kuvanäkymä</string>
+    <string name="title_splash">Ladataan GPS:ää</string>
+    
 
 </resources>

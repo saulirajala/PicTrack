@@ -28,7 +28,6 @@ import android.widget.Toast;
  * @author Ratsala
  */
 public class KuvaNakyma extends Activity {
-	private static final int REQUEST_CODE_DATA = 10;
 	private static final int REQUEST_CODE_IMAGE = 5;
 	private Bitmap bitmap;
 	private ImageView imageView;
