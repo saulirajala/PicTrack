@@ -9,5 +9,7 @@
     <string name="button_openPicture">Avaa kuvanäkymä</string>
     <string name="menu_info">Infoa</string>
     <string name="menu_apu">Apua</string>
+    <string name="title_listView">Listanäkymä</string>
+    <string name="title_kuvatView">Kuvat näkymä</string>
 
 </resources>

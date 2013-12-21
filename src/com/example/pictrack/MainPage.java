@@ -4,8 +4,10 @@ import android.os.Bundle;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 /*
  * Sovelluksessa on lista paikoista, joissa on otettu kuva. Lista pitää
@@ -40,6 +42,21 @@ public class MainPage extends Activity {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main_page, menu);
 		return true;
+	}
+
+	public void onClickOpenList(View view) {
+		Intent i = new Intent(this, ListaNakyma.class);
+		startActivity(i);
+	}
+
+	/* klikataessa avaa uuden activityn kuten listassakin
+	 * Uusi activity heti konstruktorissa avaa gallerian ja palautusarvona
+	 * tullut kuva näytettään kuten Intents.javassa
+	 * Tästä kuvasta ongitaan exif-tiedot
+	 */
+	public void onClickOpenImage(View view) {
+		Intent i = new Intent(this, KuvaNakyma.class);
+		startActivity(i);
 	}
 
 	@Override
