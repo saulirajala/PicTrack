@@ -19,19 +19,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 /**
- * Pitää listata galleriassa olevat kuvat ja näyttää ne tässä Kuvaa klikatessa
- * => näytä kuva ja data (location + date) + Button (show kuvatNakyma)
- * Intents-ohjelmassa on koodi kuva-gallerian avaamiselle. Käytä sitä Muutokset:
- * klikattaessa kuvaa galleriassa => avaa kuvaNakyma, ei liitetä vanhalle
- * sivulle
- * 
- * @author Ratsala
+ * Tämä luokka huolehtii yksittäisestä kuvanäkymästä. Konstruktorissa luodaan
+ * uusi Intent, joka näyttää puhelimen galleriassa olevat kuvat. Kun kuva
+ * valitaan, olio tulostaa kuvan ja siihen liittyvän datan (date ja gps-tiedot).
  */
 public class KuvaNakyma extends Activity {
 	private static final int REQUEST_CODE_IMAGE = 5;
 	private Bitmap bitmap;
 	private ImageView imageView;
-
+	
+	/*
+	 * Mitä tapahtuu, kun luokka luodaan
+	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -44,7 +43,12 @@ public class KuvaNakyma extends Activity {
 		intent.addCategory(Intent.CATEGORY_OPENABLE);
 		startActivityForResult(intent, REQUEST_CODE_IMAGE);
 	}
-
+	
+	/*
+	 * Metodissa kerrotaan mitä tapahtuu, kun ohjelman suorittaminen tulee 
+	 * takaisin tälle oliolle. Eli kun käyttäjä on klikannut jostain kuvasta
+	 * galleriassa. Eli tapahtuu seuraavaa: kuva ja sen exif-tiedto tulostetaan
+	 */
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		InputStream stream = null;
 		if (requestCode == REQUEST_CODE_IMAGE
@@ -56,27 +60,14 @@ public class KuvaNakyma extends Activity {
 				}
 				stream = getContentResolver().openInputStream(data.getData());
 				bitmap = BitmapFactory.decodeStream(stream);
-
 				imageView.setImageBitmap(bitmap);
 
-				// Otettu
-				// http://stackoverflow.com/questions/14978566/how-to-get-selected-image-from-gallery-in-android
-				// muodostaa kuvan osoitteen niin, että ReadExifData()-metodit
-				// ymmärtää sen
-				Uri selectedImage = data.getData();
-				String[] filePathColumn = { MediaStore.Images.Media.DATA };
-				Cursor cursor = getContentResolver().query(selectedImage,
-				        filePathColumn, null, null, null);
-				cursor.moveToFirst();
-				int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-				String picturePath = cursor.getString(columnIndex);
-				cursor.close();
-
+				String picturePath = muodostaOsoite(data.getData());
 				TextView textViewLocation = (TextView) findViewById(R.id.textLocation);
-				textViewLocation.setText(ReadExifLocation(picturePath));
+				textViewLocation.setText(readExif(picturePath, "Location"));
 
 				TextView textViewDate = (TextView) findViewById(R.id.textDate);
-				textViewDate.setText(ReadExifDate(picturePath));
+				textViewDate.setText(readExif(picturePath, "Date"));
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			} finally {
@@ -87,53 +78,61 @@ public class KuvaNakyma extends Activity {
 						e.printStackTrace();
 					}
 			}
+	}
 
+	/*
+	 * Otettu osoitteesta
+	 * http://stackoverflow.com/questions/14978566/how-to-get-
+	 * selected-image-from-gallery-in-android Muodostaa kuvan osoitteen niin,
+	 * että ReadExif()-metodit ymmärtävät sen
+	 */
+	private String muodostaOsoite(Uri data) {
+		Uri selectedImage = data;
+		String[] filePathColumn = { MediaStore.Images.Media.DATA };
+		Cursor cursor = getContentResolver().query(selectedImage,
+		        filePathColumn, null, null, null);
+		cursor.moveToFirst();
+		int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+		String picturePath = cursor.getString(columnIndex);
+		cursor.close();
+		return picturePath;
 	}
 
 	/*
 	 * Otettu
 	 * http://android-coding.blogspot.fi/2011/10/read-exif-of-jpg-file-using
 	 * .html
+	 * 
+	 * Metodi lukee kuva-tiedoston exif-tiedot riippuen sille annetusta lipusta
+	 * Jos flag==Location => palautetaan GPS-tiedot
+	 * Jos flag==Date => palautetaan päivämäärä
+	 *
 	 */
-	public String ReadExifLocation(String file) {
+	public String readExif(String file, String flag) {
 		String exif = "";
 		try {
-			ExifInterface exifInterface = new ExifInterface(file);
-			exif += exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE);
-			exif += exifInterface
-			        .getAttribute(ExifInterface.TAG_GPS_LATITUDE_REF);
+			if (flag.equalsIgnoreCase("Location")) {
+				ExifInterface exifInterface = new ExifInterface(file);
+				exif += exifInterface
+				        .getAttribute(ExifInterface.TAG_GPS_LATITUDE);
+				exif += exifInterface
+				        .getAttribute(ExifInterface.TAG_GPS_LATITUDE_REF);
 
-			exif += " "
-			        + exifInterface
-			                .getAttribute(ExifInterface.TAG_GPS_LONGITUDE);
-			exif += exifInterface
-			        .getAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF);
-
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			Toast.makeText(KuvaNakyma.this, e.toString(), Toast.LENGTH_LONG)
-			        .show();
-		}
-		return exif;
-	}
-
-	/*
-	 * Otettu
-	 * http://android-coding.blogspot.fi/2011/10/read-exif-of-jpg-file-using
-	 * .html
-	 */
-	String ReadExifDate(String file) {
-		String exif = "";
-		try {
+				exif += " "
+				        + exifInterface
+				                .getAttribute(ExifInterface.TAG_GPS_LONGITUDE);
+				exif += exifInterface
+				        .getAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF);
+				return exif;
+			}
 			ExifInterface exifInterface = new ExifInterface(file);
 
 			exif += "Date: "
 			        + exifInterface
 			                .getAttribute(ExifInterface.TAG_GPS_DATESTAMP);
+			return exif;
 
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			Toast.makeText(KuvaNakyma.this, e.toString(), Toast.LENGTH_LONG)
 			        .show();
@@ -141,6 +140,9 @@ public class KuvaNakyma extends Activity {
 		return exif;
 	}
 
+	/*
+	 * Metodi avaa uudelleen puhelimen gallerian
+	 */
 	public void onClickOpenGallery(View view) {
 		Intent i = new Intent(this, KuvaNakyma.class);
 		startActivity(i);

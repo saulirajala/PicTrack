@@ -12,6 +12,8 @@
     <string name="title_listView">Listanäkymä</string>
     <string name="title_kuvatView">Kuvanäkymä</string>
     <string name="title_splash">Ladataan GPS:ää</string>
+    <string name="image_kuva">Kuva</string>
+    <string name="logo">Logo</string>
     
 
 </resources>

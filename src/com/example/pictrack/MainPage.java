@@ -9,25 +9,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-/*
+/**
  * Sovelluksessa on lista paikoista, joissa on otettu kuva. Lista pitää
  * sisällään kuvan ottamispaikan koordinaatit ja ajan. Kun lista-itemiä
  * klikataan => näyttää kuvan
- * Aktiviteetit:
- * - pääsivu (MainPage), jossa tekstiä, nappeja ja toiminnallisuutta
- * 		-myös fragment layout
- * 		-toiminnallisuus = menu (about-diologi, ja jotain muuta)
- * 		-kaksi nappia: avaa ListView ja avaa picture view
- * 		-some labels as captions 
- * 		
- * - listanäkymä (list view), joka näyttää paikan, jossa käyttäjä on ollut
- * 		-normal layout
- * - kuvanäkymä (picture view), joka näyttää kuvat (yhden ja useamman)
- * - splash screen aloitukseen (fragment layout)
- * 		-kun orientaatio vaihtuu => älä lataa kaikkia uudestaan
+ * 
+ * MainPage on nimensä mukaisesti sovelluksen pääsivu
  * 
  */
-
 public class MainPage extends Activity {
 
 	@Override
@@ -39,26 +28,31 @@ public class MainPage extends Activity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main_page, menu);
 		return true;
 	}
-
+	
+	/*
+	 * Metodi määrittää, mitä tapahtuu kun painetaan "Avaa listanäkymä" -painiketta
+	 * Eli aloitetaan uusi Intent (ListaNakyma.java)
+	 */
 	public void onClickOpenList(View view) {
 		Intent i = new Intent(this, ListaNakyma.class);
 		startActivity(i);
 	}
 
-	/* klikataessa avaa uuden activityn kuten listassakin
-	 * Uusi activity heti konstruktorissa avaa gallerian ja palautusarvona
-	 * tullut kuva näytettään kuten Intents.javassa
-	 * Tästä kuvasta ongitaan exif-tiedot
+	/*
+	 * Metodi määrittää, mitä tapahtuu kun painetaan "Avaa kuvanäkymä" -painiketta
+	 * Eli aloitetaan uusi Intent (KuvaNakyma.java)
 	 */
 	public void onClickOpenImage(View view) {
 		Intent i = new Intent(this, KuvaNakyma.class);
 		startActivity(i);
 	}
 
+	/*
+	 * Kertoo mitä tapahtuu, kun menun painikkeita painetaan
+	 */
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle item selection
@@ -67,13 +61,15 @@ public class MainPage extends Activity {
 				infoDialogi();
 				return true;
 			case R.id.menu_apu:
-				// showHelp();
 				return true;
 			default:
 				return super.onOptionsItemSelected(item);
 		}
 	}
 
+	/*
+	 * Metodi muodostaa info dialogin käyttäen hyväksi AlertDialog-luokkaa
+	 */
 	@SuppressWarnings("deprecation")
 	private void infoDialogi() {
 		AlertDialog alertDialog = new AlertDialog.Builder(MainPage.this)

@@ -20,19 +20,35 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+/**
+ * Tämä luokka huolehtii ohjelman lista näkymästä. Eli siitä näkymästä, jossa
+ * luetellaan kunkin kuvan GPS tiedot ja date. Listan rivit muodostetaan 
+ * käyttäen apuna kustomoitua listan rivejä. 
+ * 
+ *
+ */
 public class ListaNakyma extends Activity {
 
+	/*
+	 * Adapteri huolehtii listan yhdestä rivistä
+	 */
 	private class MunAdapter extends ArrayAdapter<String> {
 
 		private final Context context;
 		private final ArrayList<String> kuvienURL;
 
+		/*
+		 * Adapterin konstruktori
+		 */
 		public MunAdapter(Context context, ArrayList<String> kuvienURL) {
-			super(context, R.layout.activity_listviewexampleactivity, kuvienURL);
+			super(context, R.layout.activity_listanakyma, kuvienURL);
 			this.context = context;
 			this.kuvienURL = kuvienURL;
 		}
 
+		/*
+		 * Metodi asettaa listarivin eri kenttiin oikeat tiedot
+		 */
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			LayoutInflater inflater = (LayoutInflater) context
@@ -44,34 +60,25 @@ public class ListaNakyma extends Activity {
 			        .findViewById(R.id.upper);
 			ImageView imageView = (ImageView) rowView.findViewById(R.id.icon);
 			imageView.setImageResource(R.drawable.talvimaisema1);
-			textViewBottom.setText(ReadExifDate(kuvienURL.get(position)));
-			textViewUpper.setText(ReadExifLocation(kuvienURL.get(position)));
+			textViewBottom.setText(readExif(kuvienURL.get(position), "Date"));
+			textViewUpper.setText(readExif(kuvienURL.get(position), "Location"));
 
 			return rowView;
 		}
 	}
 
+	
+	/*
+	 * Metodi määrittelee mitä tehdään, kun luokan mukainen olio luodaan:
+	 * Asettaa oikean layoutin, adapterin ja klikkausten kuuntelijan
+	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_listviewexampleactivity);
+		setContentView(R.layout.activity_listanakyma);
 
 		final ListView listview = (ListView) findViewById(R.id.listview);
-
-		// haetaan kaikki sdcard/DCIM kansiossa olevat tiedostot ja kansiot
-		final ArrayList<String> kuvienURL = new ArrayList<String>();
-		File[] listFile;
-		File file = new File(
-		        android.os.Environment.getExternalStorageDirectory(), "DCIM");
-
-		if (file.isDirectory()) {
-			listFile = file.listFiles();
-			for (int i = 0; i < listFile.length; i++) {
-				if (listFile[i].getAbsolutePath().contains(".jpg"))
-					kuvienURL.add(listFile[i].getAbsolutePath());
-			}
-		}
-
+		final ArrayList<String> kuvienURL = haeKuvat("DCIM");
 		final MunAdapter adapter = new MunAdapter(this, kuvienURL);
 		listview.setAdapter(adapter);
 
@@ -86,59 +93,68 @@ public class ListaNakyma extends Activity {
 				intent.setDataAndType(Uri.fromFile(file), "image/*");
 				startActivity(intent);
 			}
-
 		});
 	}
 
 	/*
-	 * Otettu
-	 * http://android-coding.blogspot.fi/2011/10/read-exif-of-jpg-file-using
-	 * .html
+	 * Haetaan kansiossa olevat .jpg-kuvat
+	 * Palautetaan ArrayList, joka sisältää kuvien osoitteen
 	 */
-	public String ReadExifLocation(String file) {
-		String exif = "";
-		try {
-			ExifInterface exifInterface = new ExifInterface(file);
-			exif += exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE);
-			exif += exifInterface
-			        .getAttribute(ExifInterface.TAG_GPS_LATITUDE_REF);
+	private ArrayList<String> haeKuvat(String kansio) {
+		final ArrayList<String> kuvienURL = new ArrayList<String>();
+		File[] listFile;
+		File file = new File(
+		        android.os.Environment.getExternalStorageDirectory(), kansio);
 
-			exif += " "
-			        + exifInterface
-			                .getAttribute(ExifInterface.TAG_GPS_LONGITUDE);
-			exif += exifInterface
-			        .getAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF);
-
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			Toast.makeText(ListaNakyma.this, e.toString(), Toast.LENGTH_LONG)
-			        .show();
+		if (file.isDirectory()) {
+			listFile = file.listFiles();
+			for (int i = 0; i < listFile.length; i++) {
+				if (listFile[i].getAbsolutePath().contains(".jpg"))
+					kuvienURL.add(listFile[i].getAbsolutePath());
+			}
 		}
-		return exif;
-	}
+	    return kuvienURL;
+    }
 
 	/*
 	 * Otettu
 	 * http://android-coding.blogspot.fi/2011/10/read-exif-of-jpg-file-using
 	 * .html
+	 * 
+	 * Metodi lukee kuva-tiedoston exif-tiedot riippuen sille annetusta lipusta
+	 * Jos flag==Location => palautetaan GPS-tiedot
+	 * Jos flag==Date => palautetaan päivämäärä
+	 *
 	 */
-	String ReadExifDate(String file) {
+	public String readExif(String file, String flag) {
 		String exif = "";
 		try {
+			if (flag.equalsIgnoreCase("Location")) {
+				ExifInterface exifInterface = new ExifInterface(file);
+				exif += exifInterface
+				        .getAttribute(ExifInterface.TAG_GPS_LATITUDE);
+				exif += exifInterface
+				        .getAttribute(ExifInterface.TAG_GPS_LATITUDE_REF);
+
+				exif += " "
+				        + exifInterface
+				                .getAttribute(ExifInterface.TAG_GPS_LONGITUDE);
+				exif += exifInterface
+				        .getAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF);
+				return exif;
+			}
 			ExifInterface exifInterface = new ExifInterface(file);
 
 			exif += "Date: "
 			        + exifInterface
 			                .getAttribute(ExifInterface.TAG_GPS_DATESTAMP);
+			return exif;
 
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			Toast.makeText(ListaNakyma.this, e.toString(), Toast.LENGTH_LONG)
 			        .show();
 		}
 		return exif;
 	}
-
 }

@@ -10,32 +10,33 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
 
+/** Tämä sekä muut splash screen jutut otettu osoitteesta
+ * http://www.michenux.net/splashscreen-android-221.html
+ * 
+ */
 public class SplashScreenActivity extends FragmentActivity {
 
 	protected MyStateSaver data;
+	
+	/* Luokka, joka kuuntelee location muuttumista
+	 * 
+	 */
 	private final LocationListener mLocationListener = new LocationListener() {
 
 		@Override
 		public void onStatusChanged(String provider, int status, Bundle extras) {
-			// TODO Auto-generated method stub
-
 		}
 
 		@Override
 		public void onProviderEnabled(String provider) {
-			// TODO Auto-generated method stub
-
 		}
 
 		@Override
 		public void onProviderDisabled(String provider) {
-			// TODO Auto-generated method stub
-
 		}
 
 		@Override
 		public void onLocationChanged(Location location) {
-
 		}
 	};
 
@@ -58,12 +59,19 @@ public class SplashScreenActivity extends FragmentActivity {
 		return this.data;
 	}
 
+	/* Metodi määrittä, mikä on seuraava activity, mikä aloitetaan
+	 * 
+	 */
 	protected void startNextActivity() {
 		Intent intent = new Intent(this, MainPage.class);
 		this.startActivity(intent);
 		this.finish();
 	}
 
+	/*
+	 * Metodi määrittää, mitä splash screen aikana tehdään (tässä haetaan
+	 * GPS-tiedot)
+	 */
 	protected void doInit() {
 		this.data.doInit = false;
 		final Handler handler = new Handler();
@@ -72,9 +80,9 @@ public class SplashScreenActivity extends FragmentActivity {
 
 				try {
 
+					//haetaan GPS-tiedot
 					String context = Context.LOCATION_SERVICE;
 					LocationManager mLocationManager = (LocationManager) getSystemService(context);
-
 					Criteria criteria = new Criteria();
 					criteria.setAccuracy(Criteria.ACCURACY_FINE);
 					criteria.setSpeedRequired(false);
@@ -84,6 +92,8 @@ public class SplashScreenActivity extends FragmentActivity {
 					criteria.setPowerRequirement(Criteria.POWER_HIGH);
 					String provider = mLocationManager.getBestProvider(
 					        criteria, false);
+					
+					//pyöritetään splash-screen, kunnes GPS-tiedot on saatu
 					while (String.valueOf(
 					        mLocationManager.getLastKnownLocation(provider))
 					        .equals("null")) {
@@ -91,7 +101,6 @@ public class SplashScreenActivity extends FragmentActivity {
 						mLocationManager.requestLocationUpdates(provider, 10000, 10,
 						        mLocationListener);
 					}
-
 				} catch (Exception e) {
 					throw new RuntimeException(e);
 				} finally {

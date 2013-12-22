@@ -8,10 +8,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+/** Tämä sekä muut splash screen jutut otettu osoitteesta
+ * http://www.michenux.net/splashscreen-android-221.html
+ * 
+ */
 public class SplashScreenFragment extends Fragment {
-
-	/*private static final Logger log = LoggerFactory
-	        .getLogger(SplashScreenFragment.class);*/
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
